@@ -448,7 +448,6 @@ async function run() {
       res.send(result);
     })
 
-
     // get jobs topic by subject 
 
     app.get('/get-jobs-topic', async (req, res) => {
@@ -463,10 +462,6 @@ async function run() {
       const result = await JobsSubCollection.find(query).toArray();
       res.send(result);
     })
-
-
-
-
     // ========================================= Bcs category============================================
     app.post('/bcs-past-category-add', async (req, res) => {
       const data = req.body;
@@ -502,9 +497,6 @@ async function run() {
     });
 
     app.get('/jobs-past-category-get', async (req, res) => {
-      // const result = await PastJobsategoryCollection.find({}).toArray();
-      // res.send(result);
-      // const result = 
       res.send(await PastJobsategoryCollection.find({}).toArray());
     });
 
@@ -522,9 +514,6 @@ async function run() {
       const result = await QuestionCollection.find({ $and: [queryOne, queryTwo] }).toArray();
       res.send(result);
     })
-
-
-
 
     // exam section
 
@@ -556,6 +545,17 @@ async function run() {
     app.get('/get-free-wakly-exam', async (req, res) => {
       const { startDate } = req.query;
       const query = { startDate: startDate };
+      const result = await FreeWeaklyExamCollection.findOne(query);
+
+      if (result) {
+        res.send(result);
+      } else {
+        res.send({});
+      }
+    });
+    app.get('/get-free-wakly-exam-one', async (req, res) => {
+      const { _id } = req.query;
+      const query = { _id: new ObjectId(_id) };
       const result = await FreeWeaklyExamCollection.findOne(query);
 
       if (result) {
@@ -1729,52 +1729,12 @@ async function run() {
 
     // Log In
     app.put("/user-update", async (req, res) => {
-      // const { email } = req.query;
-      // const query = { email: email };
-      // const query2 = { Role: "Admin" }
-      // const data = req.body;
-      // console.log(data);
-      // const options = { upsert: true };
-      // if (query2) {
-      //   const updateDoc = {
-      //     $set: {
-      //       Address: data.Address,
-      //       Mobile: data.Mobile,
-      //       Package: data.Package,
-      //       PackageEndDate: data.PackageEndDate,
-      //       PackageStartDate: data.PackageStartDate,
-      //       PackageType: data.PackageType,
-      //       UserName: data.UserName,
-      //       UserStatus: data.UserStatus,
-      //       Role: "Admin"
-      //     },
-      //   };
-      //   const result = await UserCollection.updateOne(query, query2, updateDoc, options);
-      //   res.send(result);
-      // } else {
-      //   const updateDoc = {
-      //     $set: {
-      //       Address: data.Address,
-      //       Mobile: data.Mobile,
-      //       Package: data.Package,
-      //       PackageEndDate: data.PackageEndDate,
-      //       PackageStartDate: data.PackageStartDate,
-      //       PackageType: data.PackageType,
-      //       UserName: data.UserName,
-      //       UserStatus: data.UserStatus,
-      //       Role: data.Role
-      //     },
-      //   };
-      //   const result = await UserCollection.updateOne(query, updateDoc, options);
-      //   res.send(result);
-      // }
-
       const { email } = req.query;
       const query = { email: email };
       const data = req.body;
       const options = { upsert: true };
       const existingUser = await UserCollection.findOne(query);
-      console.log(existingUser);
+      // console.log(existingUser);
       if (!existingUser) {
         let updateDoc = {
           $set: {
