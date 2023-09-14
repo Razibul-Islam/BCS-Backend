@@ -145,61 +145,6 @@ async function run() {
       res.send(result);
     });
 
-    app.put("/update-question", async (req, res) => {
-      const { id } = req.body;
-      const data = req.body;
-      // console.log(data);
-      const query = { _id: new ObjectId(id) }
-      const options = { upsert: true }
-      const updateDoc = {
-        $set: {
-          subTopic: data.subTopic,
-          subject: data.subject,
-          topic: data.topic,
-          opA: data.opA,
-          opB: data.opB,
-          opC: data.opC,
-          opD: data.opD,
-          ans: data.ans,
-          explain: data.explain,
-          question: data.question
-        }
-      };
-      const result = await QuestionCollection.updateOne(query, updateDoc, options);
-      res.send(result)
-    })
-
-    app.put("/update-question-pastJob", async (req, res) => {
-      const { id } = req.body;
-      const data = req.body;
-      const query = { _id: new ObjectId(id), question_id: data.question_id }
-      // console.log(query);
-      const options = { upsert: true }
-      const updateDoc = {
-        $set: {
-          category: data.category,
-          opA: data.opA,
-          opB: data.opB,
-          opC: data.opC,
-          opD: data.opD,
-          ans: data.ans,
-          explain: data.explain,
-          question: data.question
-        }
-      };
-      // const result = await QuestionCollection.updateOne(query, updateDoc, options);
-      // res.send(result)
-
-      try {
-        const result = await QuestionCollection.updateOne(query, updateDoc, options);
-        res.send(result);
-      } catch (error) {
-        console.error('Error updating document:', error);
-        res.status(500).send('Internal Server Error');
-      }
-
-    })
-
     app.delete('/delete-question', async (req, res) => {
       const { _id } = req.query;
       const query = { _id: new ObjectId(_id) };
@@ -448,6 +393,7 @@ async function run() {
       res.send(result);
     })
 
+
     // get jobs topic by subject 
 
     app.get('/get-jobs-topic', async (req, res) => {
@@ -462,6 +408,10 @@ async function run() {
       const result = await JobsSubCollection.find(query).toArray();
       res.send(result);
     })
+
+
+
+
     // ========================================= Bcs category============================================
     app.post('/bcs-past-category-add', async (req, res) => {
       const data = req.body;
@@ -497,6 +447,9 @@ async function run() {
     });
 
     app.get('/jobs-past-category-get', async (req, res) => {
+      // const result = await PastJobsategoryCollection.find({}).toArray();
+      // res.send(result);
+      // const result = 
       res.send(await PastJobsategoryCollection.find({}).toArray());
     });
 
@@ -514,6 +467,9 @@ async function run() {
       const result = await QuestionCollection.find({ $and: [queryOne, queryTwo] }).toArray();
       res.send(result);
     })
+
+
+
 
     // exam section
 
@@ -537,6 +493,7 @@ async function run() {
       res.send(result);
     })
 
+
     app.post('/free-weakly-text-exam', async (req, res) => {
       const data = req.body;
       const result = await FreeWeaklyExamCollection.insertOne(data);
@@ -545,17 +502,6 @@ async function run() {
     app.get('/get-free-wakly-exam', async (req, res) => {
       const { startDate } = req.query;
       const query = { startDate: startDate };
-      const result = await FreeWeaklyExamCollection.findOne(query);
-
-      if (result) {
-        res.send(result);
-      } else {
-        res.send({});
-      }
-    });
-    app.get('/get-free-wakly-exam-one', async (req, res) => {
-      const { _id } = req.query;
-      const query = { _id: new ObjectId(_id) };
       const result = await FreeWeaklyExamCollection.findOne(query);
 
       if (result) {
@@ -573,17 +519,65 @@ async function run() {
     });
 
     // get all archive 
-    app.get('/get-all-archive', async (req, res) => {
+    app.get('/get-all-archive-free-model-test', async (req, res) => {
       const { date } = req.query;
       const query = { startDate: { $ne: date } };
       const result = await FreeWeaklyExamCollection.find(query).toArray();
-      // const combinedExams = examsFromCollectionOne.concat(examsFromCollectionTwo);
       res.send(result);
     })
+
+    app.get('/get-all-archive-bcsNew', async (req, res) => {
+      const { date } = req.query;
+      const query = { startDate: { $ne: date } };
+      const result = await BcsForNewExamCollection.find(query).toArray();
+      res.send(result);
+    })
+
+    app.get('/get-all-archive-bank', async (req, res) => {
+      const { date } = req.query;
+      const query = { startDate: { $ne: date } };
+      const result = await BankExamCollection.find(query).toArray();
+      res.send(result);
+    })
+
+    app.get('/get-all-archive-experience', async (req, res) => {
+      const { date } = req.query;
+      const query = { startDate: { $ne: date } };
+      const result = await ExperienceBcsExamCollection.find(query).toArray();
+      res.send(result);
+    })
+
+    app.get('/get-all-archive-JobSolution', async (req, res) => {
+      const { date } = req.query;
+      const query = { startDate: { $ne: date } };
+      const result = await JobSolutionExamCollection.find(query).toArray();
+      res.send(result);
+    })
+
+    app.get('/get-all-archive-GreadPreparation', async (req, res) => {
+      const { date } = req.query;
+      const query = { startDate: { $ne: date } };
+      const result = await gradePreparationExamCollection.find(query).toArray();
+      res.send(result);
+    })
+
+    app.get('/get-all-archive-SubjectWise', async (req, res) => {
+      const { date } = req.query;
+      const query = { startDate: { $ne: date } };
+      const result = await subjectWiseExamCollection.find(query).toArray();
+      res.send(result);
+    })
+
+    app.get('/get-all-archive-Teacher', async (req, res) => {
+      const { date } = req.query;
+      const query = { startDate: { $ne: date } };
+      const result = await TeacherPreparationExamCollection.find(query).toArray();
+      res.send(result);
+    })
+
     app.get('/get-all-result', async (req, res) => {
       const { email } = req.query;
       const result = await FreeWeaklyResultCollection.find({ userEmail: email }).toArray();
-      // const combinedExams = examsFromCollectionOne.concat(examsFromCollectionTwo);
       res.send(result);
     })
 
@@ -612,6 +606,21 @@ async function run() {
       res.send(result);
     })
 
+
+    app.get('/get-question-by-topic', async (req, res) => {
+      const { topic, question_id } = req.query;
+      const queryOne = { topic: topic };
+      const queryTwo = { question_id: question_id }
+      const result = await QuestionCollection.find({ $and: [queryOne, queryTwo] }).toArray();
+      res.send(result);
+    })
+    app.get('/get-question-by-subtopic', async (req, res) => {
+      const { subTopic, question_id } = req.query;
+      const queryOne = { subTopic: subTopic };
+      const queryTwo = { question_id: question_id }
+      const result = await QuestionCollection.find({ $and: [queryOne, queryTwo] }).toArray();
+      res.send(result);
+    })
 
     app.post('/free-weakly-result', async (req, res) => {
       const data = req.body;
@@ -652,6 +661,7 @@ async function run() {
     app.put('/updated-free-weakly-participet', async (req, res) => {
       const { _id } = req.query;
       const data = req.body;
+      console.log(data);
       const query = { _id: new ObjectId(_id) };
       const options = { upsert: true };
       const updateDoc = {
@@ -1058,7 +1068,7 @@ async function run() {
     app.put("/updated-Job-Solution-participet", async (req, res) => {
       const { _id } = req.query;
       const data = req.body;
-      // console.log(data);
+      console.log(data);
       const query = { _id: new ObjectId(_id) };
       const options = { upsert: true };
       const updateDoc = {
@@ -1450,7 +1460,7 @@ async function run() {
         options
       );
       res.send(result);
-      // console.log(data);
+      console.log(data);
     });
 
     // Experience BCS
@@ -1706,11 +1716,11 @@ async function run() {
 
     app.post("/add-favorite", async (req, res) => {
       const data = req.body;
-      const queryOne = { _id: new ObjectId(data._id) }
+      const queryOne = { id: data.id }
       const queryTwo = { email: data.email }
 
       const existingData = await FavoriteCollection.findOne({ $and: [queryOne, queryTwo] });
-
+      // console.log(existingData);
       if (existingData) {
         res.status(409).json({ message: "Data already exists" });
       } else {
@@ -1734,7 +1744,7 @@ async function run() {
       const data = req.body;
       const options = { upsert: true };
       const existingUser = await UserCollection.findOne(query);
-      // console.log(existingUser);
+      console.log(existingUser);
       if (!existingUser) {
         let updateDoc = {
           $set: {
@@ -1823,6 +1833,166 @@ async function run() {
     })
 
 
+    app.get('/Bcs-For-New-exam-one', async (req, res) => {
+      const { _id } = req.query;
+      const query = { _id: new ObjectId(_id) };
+      const result = await BcsForNewExamCollection.findOne(query);
+
+      if (result) {
+        res.send(result);
+      } else {
+        res.send({});
+      }
+    });
+
+    app.get('/gread-preparation-exam-one', async (req, res) => {
+      const { _id } = req.query;
+      const query = { _id: new ObjectId(_id) };
+      const result = await gradePreparationExamCollection.findOne(query);
+
+      if (result) {
+        res.send(result);
+      } else {
+        res.send({});
+      }
+    });
+
+
+
+    app.get('/subject-wise-exam-one', async (req, res) => {
+      const { _id } = req.query;
+      const query = { _id: new ObjectId(_id) };
+      const result = await subjectWiseExamCollection.findOne(query);
+
+      if (result) {
+        res.send(result);
+      } else {
+        res.send({});
+      }
+    });
+
+
+    app.get('/Bank-preparation-exam-one', async (req, res) => {
+      const { _id } = req.query;
+      const query = { _id: new ObjectId(_id) };
+      const result = await BankExamCollection.findOne(query);
+
+      if (result) {
+        res.send(result);
+      } else {
+        res.send({});
+      }
+    });
+
+
+    app.get('/Experience-exam-one', async (req, res) => {
+      const { _id } = req.query;
+      const query = { _id: new ObjectId(_id) };
+      const result = await ExperienceBcsExamCollection.findOne(query);
+
+      if (result) {
+        res.send(result);
+      } else {
+        res.send({});
+      }
+    });
+
+
+    app.get('/get-Job-Solution-exam-one', async (req, res) => {
+      const { _id } = req.query;
+      const query = { _id: new ObjectId(_id) };
+      const result = await JobSolutionExamCollection.findOne(query);
+
+      if (result) {
+        res.send(result);
+      } else {
+        res.send({});
+      }
+    });
+
+
+    app.get('/get-teacher-preparation-exam-one', async (req, res) => {
+      const { _id } = req.query;
+      const query = { _id: new ObjectId(_id) };
+      const result = await TeacherPreparationExamCollection.findOne(query);
+
+      if (result) {
+        res.send(result);
+      } else {
+        res.send({});
+      }
+    });
+
+
+    app.get('/get-free-wakly-exam-one', async (req, res) => {
+      const { _id } = req.query;
+      const query = { _id: new ObjectId(_id) };
+      const result = await FreeWeaklyExamCollection.findOne(query);
+
+      if (result) {
+        res.send(result);
+      } else {
+        res.send({});
+      }
+    });
+
+    app.put("/update-question", async (req, res) => {
+      const { id } = req.body;
+      const data = req.body;
+      console.log(data);
+      const query = { _id: new ObjectId(id) }
+      const options = { upsert: true }
+      const updateDoc = {
+        $set: {
+          subTopic: data.subTopic,
+          subject: data.subject,
+          topic: data.topic,
+          opA: data.opA,
+          opB: data.opB,
+          opC: data.opC,
+          opD: data.opD,
+          ans: data.ans,
+          explain: data.explain,
+          question: data.question
+        }
+      };
+      const result = await QuestionCollection.updateOne(query, updateDoc, options);
+      res.send(result)
+    })
+
+    app.put("/update-question-pastJob", async (req, res) => {
+      const { id } = req.body;
+      const data = req.body;
+      const query = { _id: new ObjectId(id), question_id: data.question_id }
+      console.log(query);
+      const options = { upsert: true }
+      const updateDoc = {
+        $set: {
+          category: data.category,
+          opA: data.opA,
+          opB: data.opB,
+          opC: data.opC,
+          opD: data.opD,
+          ans: data.ans,
+          explain: data.explain,
+          question: data.question
+        }
+      };
+      // const result = await QuestionCollection.updateOne(query, updateDoc, options);
+      // res.send(result)
+
+      try {
+        const result = await QuestionCollection.updateOne(query, updateDoc, options);
+        res.send(result);
+      } catch (error) {
+        console.error('Error updating document:', error);
+        res.status(500).send('Internal Server Error');
+      }
+
+    })
+
+
+
 
 
   } finally {
@@ -1835,5 +2005,5 @@ run();
 
 
 app.listen(port, () => {
-  console.log("Running your server");
+  // console.log("Running your server");
 });
